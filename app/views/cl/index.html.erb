@@ -1,0 +1,269 @@
+<a href="?is_us=true">&gt;&gt;Check in US mode</a>
+<h4>Choose Endpoint (<%= PpClassic::IS_PROD ? "Production" : "Sandbox" %>) <a href="https://developer.paypal.com/docs/classic/api/" target="_blank">details</a>
+</h4>
+<%= raw show_endpoint(session[:endpoint]) %>
+<br/>
+<!--
+<%= raw show_ua(session[:ua], request.user_agent) %>
+<p>navigator.userAgent (JS): <span id="js_ua"></span></p>
+-->
+
+<h4>Common Request</h4>
+<table class="table table-striped">
+        <tbody>
+          <tr>
+            <td style="width:26%;">
+              Call a NVP(Classic) API
+            </td>
+            <td>
+              <%= form_tag("/cl/call", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "Method") %>
+                <%= text_field_tag('m_call', @m_call, :class=>'form-control') %>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/#ec', :target => '_blank') %>
+                <%= text_area_tag('q_call', session[:q_call], {:rows=>'3', :class=>'form-control'}) %>
+                </p>
+               <%= button_tag("Call NVP API!", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('Call a NVP(Classic) API', @res) if request.path_info == '/cl/call' %>
+            </td>
+          </tr>
+        </tbody>
+</table>
+
+<h4>Express Checkout API</h4>
+<table class="table table-striped">
+        <tbody>
+          <tr>
+            <td style="width:26%;">
+              SetExpressCheckout
+            </td>
+            <td>
+              <%= form_tag("/cl/setec", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/merchant/SetExpressCheckout_API_Operation_NVP/', :target => '_blank') %>
+                <%= text_area_tag('q_setec', session[:q_setec], {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('endpoint','', :id=>'e_setec') %>
+                </p>
+               <%= button_tag("1.Begin a payment!", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('SetExpressCheckout', @res) if request.path_info == '/cl/setec' || request.fullpath.include?('st=') %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              GetExpressCheckoutDetails
+            </td>
+            <td>
+              <%= form_tag("/cl/getec", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "TOKEN") %>
+                <%= text_field_tag('t_getec', @t_getec, :class=>'form-control') %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                <%= hidden_field_tag('t_crrp', @t_crrp) %>
+                <%= hidden_field_tag('t_crrp', @t_crba) %>
+                <%= hidden_field_tag('p_doec', @p_doec) %>
+                <%= hidden_field_tag('q_doec', @q_doec) %>
+                </p>
+               <%= button_tag("2.Check the payment!", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('GetExpressCheckoutDetails', @res) if request.path_info == '/cl/getec' %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              DoExpressCheckoutPayment
+            </td>
+            <td>
+              <%= form_tag("/cl/doec", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "TOKEN") %>
+                <%= text_field_tag('t_doec', @t_doec, :class=>'form-control') %>
+                <%= label_tag(nil, "PAYERID") %>
+                <%= text_field_tag('p_doec', @p_doec, :class=>'form-control') %>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/merchant/DoExpressCheckoutPayment_API_Operation_NVP/', :target => '_blank') %>
+                <%= text_area_tag('q_doec', @q_doec, {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_crrp', @t_crrp) %>
+                </p>
+               <%= button_tag("3.Finish the payment!", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('DoExpressCheckoutPayment', @res) if request.path_info == '/cl/doec' %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              CreateRecurringPaymentsProfile<br/>(For recurring payments)
+            </td>
+            <td>
+              <%= form_tag("/cl/crrp", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "TOKEN") %>
+                <%= text_field_tag('t_crrp', @t_crrp, :class=>'form-control') %>
+                <%= label_tag(nil, "PROFILESTARTDATE (GMT: JST - 9 hr)") %>
+                <%= text_field_tag('sd_crrp', set_default_time(@sd_crrp, +(60*60*24), true), :class=>'form-control') %>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/merchant/CreateRecurringPaymentsProfile_API_Operation_NVP/', :target => '_blank') %>
+                <%= text_area_tag('q_crrp', session[:q_crrp], {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                <%= hidden_field_tag('p_doec', @p_doec) %>
+                <%= hidden_field_tag('q_doec', @q_doec) %>
+                </p>
+               <%= button_tag("Start a recurring payment", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('CreateRecurringPaymentsProfile', @res) if request.path_info == '/cl/crrp' %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              CreateBillingAgreement<br/>(For reference transaction without DoEC)
+            </td>
+            <td>
+              <%= form_tag("/cl/crba", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "TOKEN") %>
+                <%= text_field_tag('t_crba', @t_crba, :class=>'form-control') %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                <%= hidden_field_tag('p_doec', @p_doec) %>
+                <%= hidden_field_tag('q_doec', @q_doec) %>
+                </p>
+               <%= button_tag("Get a billing agreement", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('CreateBillingAgreement', @res) if request.path_info == '/cl/crba' %>
+            </td>
+          </tr>
+
+    </tbody>
+</table>
+
+<h4>Transaction API</h4>
+<table class="table table-striped">
+    <tbody>
+          <tr>
+            <td style="width:26%;">
+              TransactionSearch
+            </td>
+            <td>
+              <%= form_tag("/cl/trsr", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "STARTDATE (GMT: JST - 9 hr)") %>
+                <%= text_field_tag('sd_trsr', set_default_time(@sd_trsr, -60), :class=>'form-control') %>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/merchant/TransactionSearch_API_Operation_NVP/', :target => '_blank') %>
+                <%= text_area_tag('q_trsr', @q_trsr, {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                </p>
+               <%= button_tag("Search transactions", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('TransactionSearch', @res) if request.path_info == '/cl/trsr' %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              GetTransactionDetails
+            </td>
+            <td>
+              <%= form_tag("/cl/gettr", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "TRANSACTIONID") %>
+                <%= text_field_tag('i_gettr', @i_gettr, :class=>'form-control') %>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/merchant/GetTransactionDetails_API_Operation_NVP/', :target => '_blank') %>
+                <%= text_area_tag('q_gettr', @q_gettr, {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                </p>
+               <%= button_tag("Check a transaction", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('GetTransactionDetails', @res) if request.path_info == '/cl/gettr' %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              GetRecurringPaymentsProfileDetails
+            </td>
+            <td>
+              <%= form_tag("/cl/getrp", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "PROFILEID") %>
+                <%= text_field_tag('i_getrp', @i_getrp, :class=>'form-control') %>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/merchant/GetRecurringPaymentsProfileDetails_API_Operation_NVP/', :target => '_blank') %>
+                <%= text_area_tag('q_getrp', @q_getrp, {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                </p>
+               <%= button_tag("Check a recurring payment", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('GetRecurringPaymentsProfileDetails', @res) if request.path_info == '/cl/getrp' %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              DoReferenceTransaction
+            </td>
+            <td>
+              <%= form_tag("/cl/dort", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "REFERENCEID (TRANSACTIONID or BILLINGAGREEMENTID)") %>
+                <%= text_field_tag('i_dort', @i_dort, :class=>'form-control') %>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/api/merchant/DoReferenceTransaction_API_Operation_NVP/', :target => '_blank') %>
+                <%= text_area_tag('q_dort', @q_dort, {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                </p>
+               <%= button_tag("Execute a payment!", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('DoReferenceTransaction', @res) if request.path_info == '/cl/dort' %>
+            </td>
+          </tr>
+
+          <tr>
+            <td>
+              MassPay
+            </td>
+            <td>
+              <%= form_tag("/cl/mass", method: "post") do %>
+                <p>
+                <%= label_tag(nil, "Parameters") %>
+                <%= link_to("details", 'https://developer.paypal.com/docs/classic/mass-pay/integration-guide/MassPayUsingAPI/#id101DEJ0100A', :target => '_blank') %>
+                <%= text_area_tag('q_mass', @q_mass, {:rows=>'3', :class=>'form-control'}) %>
+                <%= hidden_field_tag('t_getec', @t_getec) %>
+                <%= hidden_field_tag('t_doec', @t_doec) %>
+                </p>
+               <%= button_tag("Send money to multiple accounts!", :class =>'btn btn-default') %>
+              <% end %>
+              <%= raw show_res('MassPay', @res) if request.path_info == '/cl/mass' %>
+            </td>
+          </tr>
+
+    </tbody>
+</table>
+
+
+<script>
+var setEp = function () {
+  $("#e_setec").val($('#e_p').val());
+};
+
+$('#e_p').change(setEp);
+
+setEp();
+
+//$("#js_ua").text(navigator.userAgent);
+
+</script>
