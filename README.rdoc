@@ -1,0 +1,60 @@
+== README
+
+This is my private PayPal integration sample for learning products and Ruby, Not official one.
+
+* Prerequisites
+
+  PostgreSQL database named 'pp_ruby_demo'.
+
+  Following environment variables.
+  - Set true if you use production accounts
+
+    export PP_PROD=true
+
+  - Class API signature
+
+    export PP_API_USER=
+
+    export PP_API_PWD=
+
+    export PP_API_SIG=
+
+  - Classic API signature for US
+
+    export PP_API_USER_US=
+
+    export PP_API_PWD_US=
+
+    export PP_API_SIG_US=
+
+  - Classic API certificate
+
+    export PP_API_USER_CER=
+
+    export PP_API_PWD_CER=
+
+    export PP_API_CER=<Paste your cert>
+
+  - Adaptive payment app id
+
+    export PP_API_APP_AD=
+
+  - REST API settings
+
+    export PP_API_APP_REST=<Your client id>
+
+    export PP_API_APP_REST_SEC=<Your secret>
+
+    export PP_API_APP_REST_URI=<Your callback>
+
+  - Subject for Classic and adaptive APIs
+
+    export PP_API_SUBJECT=<subject account email address>
+
+  -  Braintree SDK settings
+
+    export PP_BT_TOKEN=<Your access token for LIVE>
+
+* Running on Heroku
+
+  https://jo-pp-ruby-demo.herokuapp.com
